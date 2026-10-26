@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Camera Demo</title>
+</head>
+<body>
+  <h2>Camera Demo</h2>
+  <p>Camera preview isi device par dikhega. Live transfer aur recording abhi set up nahi hain.</p>
+
+  <label>
+    <input type="checkbox" id="consent">
+    Main camera preview shuru karne ke liye sahmat hoon.
+  </label>
+  <br><br>
+
+  <button id="start">Agree & Start Camera</button>
+  <button id="stop">Stop Camera</button>
+  <p id="status">Camera band hai.</p>
+  <video id="video" autoplay playsinline muted width="320"></video>
+
+  <script>
+    let stream = null;
+    const status = document.getElementById("status");
+    const video = document.getElementById("video");
+
+    document.getElementById("start").onclick = async () => {
+      if (!document.getElementById("consent").checked) {
+        status.textContent = "Pehle sahmati dein.";
+        return;
+      }
+
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: false
+        });
+        video.srcObject = stream;
+        status.textContent = "Camera chalu hai. Video isi device par dikh raha hai.";
+      } catch (error) {
+        status.textContent = "Camera nahi khula: " + error.name;
+      }
+    };
+
+    document.getElementById("stop").onclick = () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+      }
+      video.srcObject = null;
+      status.textContent = "Camera band hai.";
+    };
+  </script>
+</body>
+</html>
